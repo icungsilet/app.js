@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Movie Elite</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ViralScreen Ote Jalaludin</title>
+<meta property="og:title" content="ViralScreen">
+<meta property="og:type" content="website">
+<meta property="og:description" content="Discover trending movies and TV shows">
+<meta name="description" content="Watch trending movies, TV shows and popular people.">
+<meta name="theme-color" content="#0f172a">
 
 <script type="application/ld+json">
 {
@@ -19,90 +25,90 @@
 </script>
 
 <style>
-body {
-  margin: 0;
-  background: #020617;
+
+.movie {
+  max-width: 800px;
+  margin: auto;
   color: white;
-  font-family: Arial;
-}
-.banner {
-  height: 60vh;
-  background-size: cover;
-  display: flex;
-  align-items: flex-end;
-  padding: 20px;
 }
 
-.content {
-  padding: 20px;
+body {
+  background: #020617;
+}
+
+img {
+  width: 100%;
+  border-radius: 10px;
 }
 
 iframe {
   width: 100%;
   height: 400px;
 }
-header {
-  padding: 15px;
-  background: #020617;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
 
-#search {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-}
 
-.hero {
-  height: 60vh;
-  background-size: cover;
-  display: flex;
-  align-items: flex-end;
-  padding: 20px;
-}
 
-.hero h1 {
-  font-size: 40px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
-  gap: 15px;
-  padding: 20px;
-}
-
-.card {
-  transition: 0.3s;
-  cursor: pointer;
-}
-
-.card:hover {
-  transform: scale(1.08);
-}
-
-.card img {
-  width: 100%;
-  border-radius: 10px;
-}
 </style>
+
 </head>
 
 <body>
 
-<header>
-  <input id="search" placeholder="Search movies...">
-</header>
+<div class="movie">
 
-<div class="hero" id="hero"></div>
-<div class="grid" id="movies"></div>
-<script src="https://icungsilet.github.io/app.js/app.js"></script>
+<h1>{{title}}</h1>
 
-<div class="banner" id="banner"></div>
-<div class="content" id="content"></div>
-<script src="https://icungsilet.github.io/app.js/detail.js"></script>
+<img src="https://image.tmdb.org/t/p/w500{{poster}}">
+
+<p>{{overview}}</p>
+
+<div class="player">
+  <iframe src="https://www.youtube.com/embed/{{trailer}}" allowfullscreen></iframe>
+</div>
+
+<p><b>Release:</b> {{release}}</p>
+<p><b>Rating:</b> ⭐ {{rating}}</p>
+
+</div>
+
+<script>
+
+const BASE = "https://vxz.megadon8787.workers.dev";
+
+async function generatePost(id) {
+  const movie = await fetch(`${BASE}/movie/${id}`).then(r => r.json());
+  const vids = await fetch(`${BASE}/movie/${id}/videos`).then(r => r.json());
+
+  const trailer = vids.results.find(v => v.type === "Trailer");
+
+  const html = `
+<h1>${movie.title}</h1>
+<img src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
+<p>${movie.overview}</p>
+
+<iframe src="https://www.youtube.com/embed/${trailer?.key || ""}"></iframe>
+
+<p>Release: ${movie.release_date}</p>
+<p>Rating: ${movie.vote_average}</p>
+`;
+
+  console.log(html);
+}
+
+generatePost(550); // contoh Fight Club
+
+
+
+
+async function autoPost() {
+  const res = await fetch(`${BASE}/movie/popular`);
+  const data = await res.json();
+
+  data.results.forEach(m => {
+    generatePost(m.id);
+  });
+}
+
+</script>
 </body>
 </html>
